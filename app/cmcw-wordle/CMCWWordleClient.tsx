@@ -10,6 +10,7 @@ import {
   CMCW_WORDS_BY_DATE,
   getCmcwWordleConfigIssues,
 } from './words';
+import validWords from './valid-wordle-words.json';
 
 type TileState = 'correct' | 'present' | 'absent';
 
@@ -77,8 +78,29 @@ function tileFaceClasses(state: TileState | null) {
   return `${base} bg-[#9CA3AF] border-[#9CA3AF] text-white`;
 }
 
+function renderBodyWithBoldAnswer(body: string, answer: string) {
+  const safe = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`\\b${safe}\\b`, 'gi');
+  const parts = body.split(re);
+  const matches = body.match(re) ?? [];
+
+  const nodes: React.ReactNode[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i]) nodes.push(parts[i]);
+    const m = matches[i];
+    if (m) nodes.push(<strong key={`ans-${i}`}>{m}</strong>);
+  }
+  return nodes;
+}
+
 function normalizeGuess(value: string) {
   return value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 5);
+}
+
+function buildAllowedWordsSet(words: string[]) {
+  const set = new Set<string>();
+  for (const w of words) set.add(w);
+  return set;
 }
 
 type SavedSnapshot = { guesses: string[]; state: GameState };
@@ -144,6 +166,7 @@ function DayGame({
   answer: string;
   canPlay: boolean;
 }) {
+  const allowedWords = useMemo(() => buildAllowedWordsSet(validWords), []);
   const storageKey = useMemo(() => `cmcw-wordle:v2:${todayKey}`, [todayKey]);
   const savedRaw = useSavedGameRaw(storageKey, canPlay);
   const saved = useMemo(() => parseSavedRaw(savedRaw), [savedRaw]);
@@ -166,7 +189,9 @@ function DayGame({
   const [revealProgress, setRevealProgress] = useState(5);
   const pendingOutcomeRef = useRef<{ outcome: GameState | null; answer: string } | null>(null);
   const isRevealing = revealRow !== null;
-  const [isWinPopupOpen, setIsWinPopupOpen] = useState(false);
+  const [isResultPopupOpen, setIsResultPopupOpen] = useState(false);
+  const [resultPopupOutcome, setResultPopupOutcome] = useState<GameState | null>(null);
+  const [resultPopupTries, setResultPopupTries] = useState<number | null>(null);
   const winPopup = CMCW_DAILY_BY_DATE[todayKey] ?? null;
 
   const clearRevealTimers = () => {
@@ -186,7 +211,9 @@ function DayGame({
   }, []);
 
   useEffect(() => {
-    setIsWinPopupOpen(false);
+    setIsResultPopupOpen(false);
+    setResultPopupOutcome(null);
+    setResultPopupTries(null);
   }, [storageKey]);
 
   const setTimedMessage = useCallback((text: string) => {
@@ -234,6 +261,17 @@ function DayGame({
       return;
     }
 
+    if (!allowedWords.has(guess) && guess !== answer) {
+      const id = (animIdRef.current += 1);
+      setShakeAnim({ row: guesses.length, id });
+      if (shakeTimeoutRef.current) window.clearTimeout(shakeTimeoutRef.current);
+      shakeTimeoutRef.current = window.setTimeout(() => {
+        setShakeAnim((prev) => (prev?.id === id ? null : prev));
+      }, 520);
+      setTimedMessage('Not in word list.');
+      return;
+    }
+
     const nextGuesses = [...guesses, guess];
     setCurrent('');
 
@@ -266,7 +304,11 @@ function DayGame({
       if (pending.outcome === 'won') {
         writeSavedGame(storageKey, { guesses: nextGuesses, state: 'won' });
         setTimedMessage('Nice! You got it.');
-        if (winPopup) setIsWinPopupOpen(true);
+        if (winPopup) {
+          setResultPopupOutcome('won');
+          setResultPopupTries(nextGuesses.length);
+          setIsResultPopupOpen(true);
+        }
         const id = (animIdRef.current += 1);
         setDanceAnim({ row: rowIndex, id });
         if (danceTimeoutRef.current) window.clearTimeout(danceTimeoutRef.current);
@@ -276,11 +318,16 @@ function DayGame({
       } else if (pending.outcome === 'lost') {
         writeSavedGame(storageKey, { guesses: nextGuesses, state: 'lost' });
         setTimedMessage(`Answer: ${pending.answer}`);
+        if (winPopup) {
+          setResultPopupOutcome('lost');
+          setResultPopupTries(null);
+          setIsResultPopupOpen(true);
+        }
       }
     }, 4 * 120 + 620);
     revealTimersRef.current.push(finish);
 
-  }, [answer, canPlay, current, gameState, guesses, isRevealing, setTimedMessage, storageKey, winPopup]);
+  }, [allowedWords, answer, canPlay, current, gameState, guesses, isRevealing, setTimedMessage, storageKey, winPopup]);
 
   const handleKey = useCallback(
     (key: string) => {
@@ -364,7 +411,7 @@ function DayGame({
 
   return (
     <div className="flex flex-col items-center gap-5">
-      {isWinPopupOpen && winPopup && (
+      {isResultPopupOpen && winPopup && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4"
           role="dialog"
@@ -375,11 +422,19 @@ function DayGame({
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-[#5D4A2F]">CMCW</h2>
-                <p className="text-sm text-gray-500 mt-1">{todayKey}</p>
+                {resultPopupOutcome === 'won' ? (
+                  <p className="text-sm text-gray-600 mt-1">
+                    You got the word in <span className="font-semibold text-[#5D4A2F]">{resultPopupTries}</span> tries.
+                  </p>
+                ) : resultPopupOutcome === 'lost' ? (
+                  <p className="text-sm text-gray-600 mt-1">Maybe next time!</p>
+                ) : (
+                  <p className="text-sm text-gray-500 mt-1">{todayKey}</p>
+                )}
               </div>
               <button
                 type="button"
-                onClick={() => setIsWinPopupOpen(false)}
+                onClick={() => setIsResultPopupOpen(false)}
                 className="text-gray-500 hover:text-gray-700 rounded-md px-2 py-1"
                 aria-label="Close"
               >
@@ -387,10 +442,18 @@ function DayGame({
               </button>
             </div>
 
-            <div className="mt-4 text-gray-700 whitespace-pre-line">{winPopup.winPopupBody.trimEnd()}</div>
+            <div className="mt-4 text-gray-700 whitespace-pre-line">
+              {renderBodyWithBoldAnswer(winPopup.winPopupBody.trimEnd(), answer)}
+              {resultPopupOutcome === 'lost' && (
+                <>
+                  {'\n\n'}
+                  The word was <strong>{answer}</strong>.
+                </>
+              )}
+            </div>
 
             <div className="mt-5 flex flex-wrap gap-3 justify-end">
-              <Button variant="outline" onClick={() => setIsWinPopupOpen(false)}>
+              <Button variant="outline" onClick={() => setIsResultPopupOpen(false)}>
                 Close
               </Button>
               <Button asChild>
@@ -573,7 +636,7 @@ function DayGame({
         </div>
 
         <div className="mt-4 text-center text-xs text-gray-500">
-          <span>Tip: Type on your keyboard or tap the letters. Guesses accept any 5-letter combination.</span>
+          <span>Tip: Type on your keyboard or tap the letters. Only valid Wordle words are accepted.</span>
         </div>
       </div>
     </div>

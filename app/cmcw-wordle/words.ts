@@ -16,35 +16,35 @@ export const CMCW_DAILY_BY_DATE: Record<string, CmcwWordleDaily> = {
     winPopupBody:
       "Come out Pots and Playlists, today at 5pm in MOM’s Cafe and PLANT some love, bringing home a piece of Muir with you. 💚\n\nMore information can be found on @muircollegecouncil.",
     moreInfoHandle: '@muircollegecouncil',
-    moreInfoUrl: 'https://instagram.com/muircollegecouncil',
+    moreInfoUrl: 'https://www.instagram.com/p/DVIU_FWFOe7/?img_index=1',
   },
   '2026-03-03': {
     answer: 'BANDS',
     winPopupBody:
       'Are you ready to see talented student BANDS performing at the Muirchella Festival today from 1-4pm on the Muir Quad?\n\nMore information can be found on @muircollegecouncil.',
     moreInfoHandle: '@muircollegecouncil',
-    moreInfoUrl: 'https://instagram.com/muircollegecouncil',
+    moreInfoUrl: 'https://www.instagram.com/p/DVJrQ8jErp3/',
   },
   '2026-03-04': {
     answer: 'GLOBE',
     winPopupBody:
       'Fly across the GLOBE with us to celebrate the diversity of our college at Global Game Night, happening today from 5-7pm on Muir Lawn!\n\nMore information can be found on @muircollegecouncil.',
     moreInfoHandle: '@muircollegecouncil',
-    moreInfoUrl: 'https://instagram.com/muircollegecouncil',
+    moreInfoUrl: 'https://www.instagram.com/p/DVJrgAiEhg9/?img_index=1',
   },
   '2026-03-05': {
     answer: 'UNTIL',
     winPopupBody:
       'UNTIL next time Muirons! Celebrating Muir College Week may be coming to an end, but we’re turning out for one last night on the Muir Lawn for the Muirtopia Carnival from 6-8pm tonight!\n\nMore information can be found on @muircollegecouncil.',
     moreInfoHandle: '@muircollegecouncil',
-    moreInfoUrl: 'https://instagram.com/muircollegecouncil',
+    moreInfoUrl: 'https://www.instagram.com/p/DVJr2TGEtEU/?img_index=1',
   },
   '2026-03-06': {
     answer: 'VINYL',
     winPopupBody:
       'Put that record on and play that VINYL for Muirstock! Tonight, join us for smooth R&B fused with funky dance grooves from Jae Stephens and Essosa at the Epstein Family Amphitheater from 7-10pm.\n\nMore information can be found on @muircollegeofficial.',
     moreInfoHandle: '@muircollegeofficial',
-    moreInfoUrl: 'https://instagram.com/muircollegeofficial',
+    moreInfoUrl: 'https://www.instagram.com/muircollegeofficial/',
   },
 };
 
