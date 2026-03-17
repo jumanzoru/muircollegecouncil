@@ -335,7 +335,7 @@ export default function HomePage() {
               </div>
               <h2 className="mb-4">Meetings & Governance</h2>
               <p className="text-green-100">
-                MCC holds open meetings every other Friday at 5:00 PM. All Muir students are welcome to attend, observe, and participate.
+                MCC holds open meetings every Thursday at 6:00 PM. All Muir students are welcome to attend, observe, and participate.
               </p>
             </div>
 
