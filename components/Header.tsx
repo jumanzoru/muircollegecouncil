@@ -38,12 +38,6 @@ export function Header() {
               Apply for Funding
             </Link>
             <Link
-              href="/cmcw-wordle"
-              className="px-4 py-2 text-gray-700 hover:text-[#8B6F47] hover:bg-[#FAF7F2] rounded-lg transition-colors"
-            >
-              CMCW Wordle
-            </Link>
-            <Link
               href="/#events"
               className="ml-2 px-6 py-2 bg-[#7CB342] text-white rounded-lg hover:bg-[#689F38] transition-colors shadow-sm"
             >
@@ -76,13 +70,6 @@ export function Header() {
             </Link>
             <Link href="/#funding" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 rounded-md text-base text-gray-700 hover:bg-[#E8F5E1] hover:text-[#2C5530]">
               Apply for Funding
-            </Link>
-            <Link
-              href="/cmcw-wordle"
-              onClick={() => setIsMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-base text-gray-700 hover:bg-[#E8F5E1] hover:text-[#2C5530]"
-            >
-              CMCW Wordle
             </Link>
             <div className="pt-4">
               <Link

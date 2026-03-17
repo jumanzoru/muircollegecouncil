@@ -373,9 +373,34 @@ export default function HomePage() {
                     <p className="mb-4">
                       Read the governing documents that outline MCC&#39;s structure, responsibilities, and procedures.
                     </p>
-                    <Button variant="outline" className="bg-white/10 text-white border-white/30 hover:bg-white/20 rounded-xl" asChild>
-                      <a href="https://docs.google.com/document/d/1yW7dROyhdATU06eI6A5ebajDA1D8zssMhTnNUco4FDs/edit?tab=t.0#heading=h.qy6f6ljkjb7h" target="_blank" rel="noopener noreferrer">View Documents</a>
-                    </Button>
+                    <div className="flex flex-wrap gap-3">
+                      <Button
+                        variant="outline"
+                        className="bg-white/10 text-white border-white/30 hover:bg-white/20 rounded-xl"
+                        asChild
+                      >
+                        <a
+                          href="https://docs.google.com/document/d/1yW7dROyhdATU06eI6A5ebajDA1D8zssMhTnNUco4FDs/edit?tab=t.0#heading=h.qy6f6ljkjb7h"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View Bylaws
+                        </a>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="bg-white/10 text-white border-white/30 hover:bg-white/20 rounded-xl"
+                        asChild
+                      >
+                        <a
+                          href="https://docs.google.com/document/d/1yW7dROyhdATU06eI6A5ebajDA1D8zssMhTnNUco4FDs/edit?tab=t.0#heading=h.qy6f6ljkjb7h"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View Constitution
+                        </a>
+                      </Button>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

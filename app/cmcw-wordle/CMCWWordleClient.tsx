@@ -10,7 +10,6 @@ import {
   CMCW_WORDS_BY_DATE,
   getCmcwWordleConfigIssues,
 } from './words';
-import validWords from './valid-wordle-words.json';
 
 type TileState = 'correct' | 'present' | 'absent';
 
@@ -95,12 +94,6 @@ function renderBodyWithBoldAnswer(body: string, answer: string) {
 
 function normalizeGuess(value: string) {
   return value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 5);
-}
-
-function buildAllowedWordsSet(words: string[]) {
-  const set = new Set<string>();
-  for (const w of words) set.add(w);
-  return set;
 }
 
 type SavedSnapshot = { guesses: string[]; state: GameState };
@@ -248,7 +241,6 @@ function DayGame({
   answer: string;
   canPlay: boolean;
 }) {
-  const allowedWords = useMemo(() => buildAllowedWordsSet(validWords), []);
   const settingsKey = useMemo(() => 'cmcw-wordle:settings', []);
   const settingsRaw = useSavedGameRaw(settingsKey, true);
   const settings = useMemo(() => parseSettingsRaw(settingsRaw), [settingsRaw]);
@@ -348,17 +340,6 @@ function DayGame({
       return;
     }
 
-    if (!allowedWords.has(guess) && guess !== answer) {
-      const id = (animIdRef.current += 1);
-      setShakeAnim({ row: guesses.length, id });
-      if (shakeTimeoutRef.current) window.clearTimeout(shakeTimeoutRef.current);
-      shakeTimeoutRef.current = window.setTimeout(() => {
-        setShakeAnim((prev) => (prev?.id === id ? null : prev));
-      }, 520);
-      setTimedMessage('Not in word list.');
-      return;
-    }
-
     if (hardModeEnabled && guesses.length > 0) {
       const issue = validateHardModeGuess(guess, hardConstraints);
       if (issue) {
@@ -428,7 +409,7 @@ function DayGame({
     }, 4 * 120 + 620);
     revealTimersRef.current.push(finish);
 
-  }, [allowedWords, answer, canPlay, current, gameState, guesses, hardConstraints, hardModeEnabled, isRevealing, setTimedMessage, storageKey, winPopup]);
+  }, [answer, canPlay, current, gameState, guesses, hardConstraints, hardModeEnabled, isRevealing, setTimedMessage, storageKey, winPopup]);
 
   const handleKey = useCallback(
     (key: string) => {
